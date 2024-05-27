@@ -1,0 +1,15 @@
+.todolistBody {
+  background-color: white;
+  padding: 10px;
+  text-align: center;
+  box-shadow: var(--shadow-effect);
+}
+
+.todolistHelperText {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  font-family: serif;
+  letter-spacing: 2px;
+  color: grey;
+}

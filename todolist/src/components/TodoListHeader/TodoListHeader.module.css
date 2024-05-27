@@ -1,0 +1,17 @@
+.todolistHeader {
+  background-color: var(--purple);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  box-shadow: var(--shadow-effect);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.todolistHeaderTitle {
+  font-size: 30px;
+  font-family: sans-serif;
+  font-weight: bold;
+  letter-spacing: 4px;
+  font-style: oblique;
+}

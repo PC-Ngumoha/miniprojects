@@ -1,0 +1,37 @@
+.container {
+  margin: 20px 0;
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.input {
+  flex: 2;
+  height: 40px;
+  padding: 0 5px;
+  margin: 0 3.2px 0 0;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
+  border: 0;
+  font-size: 16.8px;
+  font-family: sans-serif;
+  color: #4f4d50;
+  box-shadow: var(--shadow-effect);
+}
+
+.input:focus {
+  outline: .5px solid grey;
+}
+
+.submit {
+  flex: 1;
+  border-top-right-radius: inherit;
+  border-bottom-right-radius: inherit;
+  border: .5px solid grey;
+  background-color: var(--purple);
+  color: white;
+  font-size: 15.5px;
+  font-weight: bold;
+  box-shadow: var(--shadow-effect);
+}

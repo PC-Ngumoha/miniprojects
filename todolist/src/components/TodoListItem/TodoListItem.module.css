@@ -1,0 +1,29 @@
+.container {
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.check {
+  flex: 1;
+}
+
+.taskText {
+  flex: 9;
+  text-align: left;
+  padding: 2px;
+}
+
+.delButton {
+  flex: 2;
+  height: 20px;
+  background-color: transparent;
+  border: 0;
+  color: blueviolet;
+}
+
+.delHide {
+  flex: 2;
+}
