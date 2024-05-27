@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Testing related stubs
+src/components/*/__snapshots__/*
