@@ -10,10 +10,16 @@
   flex: 1;
 }
 
+.check:checked+p {
+  text-decoration: line-through;
+}
+
 .taskText {
   flex: 9;
   text-align: left;
   padding: 2px;
+  font-family: sans-serif;
+  color: rgb(64, 63, 66);
 }
 
 .delButton {
