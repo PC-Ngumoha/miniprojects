@@ -3,15 +3,8 @@ const mongoose = require('mongoose');
 const { Post } = require('../models/post');
 const { app, server } = require('../src/app');
 
-// const URI = 'mongodb://127.0.0.1:27017/testDB';
-
-// beforeAll(async () => {
-//   // Create new connection to test DB
-// });
-
 afterAll(async () => {
   // Disconnect from test DB
-  // await connection.close();
   await mongoose.disconnect();
   server.close();
 });
@@ -85,8 +78,46 @@ describe('GET /api/posts/', () => {
         expect(post).not.toHaveProperty('updatedAt');
       });
     });
+
+    it('should only return five posts without explicit pagination',
+      async () => {
+        const mockPost = {
+          title: 'New Post',
+          body: 'Post content goes here',
+        }
+        let post;
+        for (let i = 0; i < 8; i++) {
+          post = new Post(mockPost);
+          await post.save();
+        }
+
+        const res = await request(app).get('/api/posts/')
+                          .set('Accept', 'application/json');
+
+        expect(res.body.posts.length).toEqual(5);
+    });
+
+    it('should return desired number of posts using pagination',
+      async () => {
+        const mockPost = {
+          title: 'New Post',
+          body: 'Post content goes here',
+        };
+        let post;
+        for (let i = 0; i < 8; i++) {
+          post = new Post(mockPost);
+          await post.save();
+        }
+        const LIMIT = 4;
+
+        const res = await request(app).get(`/api/posts/?limit=${LIMIT}`)
+                          .set('Accept', 'application/json');
+
+        expect(res.body.posts.length).toEqual(LIMIT);
+      });
   });
 });
+
 
 
 describe('POST /api/posts/', () => {
