@@ -1,20 +1,17 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { postSchema } = require('../models/post');
+const { Post } = require('../models/post');
 const { app, server } = require('../src/app');
 
-const URI = 'mongodb://127.0.0.1:27017/testDB';
-let conn, Post;
+// const URI = 'mongodb://127.0.0.1:27017/testDB';
 
-beforeAll(async () => {
-  // Create new connection to test DB
-  conn = await mongoose.createConnection(URI);
-  Post = conn.model('Post', postSchema);
-});
+// beforeAll(async () => {
+//   // Create new connection to test DB
+// });
 
 afterAll(async () => {
   // Disconnect from test DB
-  await conn.close();
+  // await connection.close();
   await mongoose.disconnect();
   server.close();
 });
@@ -134,5 +131,143 @@ describe('GET /api/posts/post/:ID', () => {
     const res = await request(app).get(`/api/posts/post/${post._id}`)
                       .set('Accept', 'application/json');
     expect(res.statusCode).toEqual(200);
+  });
+
+  describe('Response body', () => {
+    it('should be an object', async () => {
+      const mockPost = {
+        title: 'New Post',
+        body: 'Post content goes here'
+      };
+
+      const post = new Post(mockPost);
+      await post.save();
+
+      const res = await request(app).get(`/api/posts/post/${post._id}`)
+                        .set('Accept', 'application/json');
+      expect(res.body instanceof Object).toBe(true);
+    });
+
+    it('should have all model fields', async () => {
+      const mockPost = {
+        title: 'New Post',
+        body: 'Post content goes here'
+      };
+
+      const post = new Post(mockPost);
+      await post.save();
+
+      const res = await request(app).get(`/api/posts/post/${post._id}`)
+                        .set('Accept', 'application/json');
+      const body = res.body.post;
+      expect(body).toHaveProperty('_id');
+      expect(body).toHaveProperty('title');
+      expect(body).toHaveProperty('body');
+      expect(body).toHaveProperty('createdAt');
+      expect(body).toHaveProperty('updatedAt');
+    });
+  });
+});
+
+
+describe('PATCH /api/posts/post/:ID', () => {
+  it('should return response status code 200', async () => {
+      const mockPost = {
+        title: 'New Post',
+        body: 'Post content goes here'
+      };
+
+      const modifications = {title: 'Old Post'};
+
+      const post = new Post(mockPost);
+      await post.save();
+
+      const res = await request(app).patch(`/api/posts/post/${post._id}`)
+                        .send(modifications)
+                        .set('Accept', 'application/json');
+
+      expect(res.statusCode).toEqual(200);
+  });
+
+  describe('Response Body', () => {
+    it('should be empty', async () => {
+      const mockPost = {
+        title: 'New Post',
+        body: 'Post content goes here'
+      };
+
+      const modifications = {title: 'Old Post'};
+
+      const post = new Post(mockPost);
+      await post.save();
+
+      const res = await request(app).patch(`/api/posts/post/${post._id}`)
+                        .send(modifications)
+                        .set('Accept', 'application/json');
+
+      expect(res.body).toEqual({});
+    });
+  });
+
+  describe('Response Effect', () => {
+    it('should update content of actual post', async () => {
+      const mockPost = {
+        title: 'New Post',
+        body: 'Post content goes here'
+      };
+
+      const modifications = {title: 'Old Post'};
+
+      let post = new Post(mockPost);
+      const postId = post._id;
+      await post.save();
+
+      const res = await request(app).patch(`/api/posts/post/${postId}`)
+                        .send(modifications)
+                        .set('Accept', 'application/json');
+
+      expect(res.statusCode).toEqual(200);
+
+      post = (await Post.find({ _id: postId }))[0];
+
+      expect(post.title).not.toEqual(mockPost.title);
+      expect(post.title).toEqual(modifications.title);
+    });
+  });
+});
+
+
+describe('DELETE /api/posts/post/:ID', () => {
+  it('should return response status code 204', async () => {
+    const mockPost = {
+      title: 'New Post',
+      body: 'Post content goes here'
+    };
+
+    const post = new Post(mockPost);
+    await post.save();
+
+    const res = await request(app).delete(`/api/posts/post/${post._id}`);
+
+    expect(res.statusCode).toEqual(204);
+  });
+
+  describe('Response Effect', () => {
+    it('should remove specific post from DB', async () => {
+      const mockPost = {
+        title: 'New Post',
+        body: 'Post content goes here'
+      };
+
+      let post = new Post(mockPost);
+      const postId = post._id;
+      await post.save();
+
+      await request(app).delete(`/api/posts/post/${postId}`);
+
+      post = await Post.find({ _id: postId })[0];
+
+      expect(post).toBeUndefined();
+    });
   });
 });

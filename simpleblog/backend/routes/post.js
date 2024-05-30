@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
 router.get('/post/:postId', async (req, res) => {
   let statusCode, output;
   try {
-    const post = await Post.find({ _id: parseInt(req.params.postId) });
+    const post = await Post.find({ _id: req.params.postId });
     if (post.length > 0) {
       statusCode = 200;
       output = {post: post[0]};
