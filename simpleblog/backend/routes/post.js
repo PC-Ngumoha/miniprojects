@@ -63,9 +63,13 @@ router.get('/post/:postId', async (req, res) => {
   return res.status(statusCode).send(output);
 });
 
-router.patch('/post/:postId', async (req, res) => {
+router.patch('/post/:postId', upload.single('thumbnail'), async (req, res) => {
   let statusCode;
   try {
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file);
+      req.body.thumbnail = result.secure_url;
+    }
     await Post.updateOne(
       { _id: req.params.postId }, req.body);
     statusCode = 200;

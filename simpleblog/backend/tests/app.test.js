@@ -314,6 +314,40 @@ describe('PATCH /api/posts/post/:ID', () => {
       expect(post.title).not.toEqual(mockPost.title);
       expect(post.title).toEqual(modifications.title);
     });
+
+    it('should allow update of thumbnail for a post', async () => {
+      const mockPost = {
+        title: 'New Post',
+        body: 'Post content goes here'
+      };
+
+      const mockResult = {
+        secure_url: 'https://res.cloudinary.com/mock-url',
+      };
+
+      uploadToCloudinary.mockResolvedValue(mockResult);
+
+      const modifications = {title: 'Old Post'};
+
+      let post = new Post(mockPost);
+      const postId = post._id;
+      await post.save();
+
+      expect(post).toHaveProperty('thumbnail', undefined);
+
+      await request(app).patch(`/api/posts/post/${postId}`)
+            .field('title', modifications.title)
+            .attach('thumbnail', Buffer.from('An Image'), {
+              filename: 'test.png',
+              contentType: 'image/png'
+            });
+
+      post = await Post.find({ _id: postId });
+
+      expect(post[0].title).toEqual(modifications.title);
+      expect(post[0]).toHaveProperty('thumbnail', mockResult.secure_url);
+      expect(uploadToCloudinary).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
