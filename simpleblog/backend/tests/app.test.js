@@ -119,6 +119,24 @@ describe('GET /api/posts/', () => {
 
         expect(res.body.posts.length).toEqual(LIMIT);
       });
+
+    it('should be able to filter posts by title', async () => {
+      const mockPosts = [
+        {title: 'Post #1', body: 'Post content goes here'},
+        {title: 'Post #2', body: 'Post content goes here'},
+        {title: 'Something', body: 'Post content goes here'},
+      ]
+
+      await Post.insertMany(mockPosts);
+
+      const res = await request(app).get('/api/posts/?search=post')
+                  .set('Accept', 'application/json');
+
+      expect(res.body.posts.length).toEqual(2);
+      res.body.posts.forEach((post, idx) => {
+        expect(post.title).toEqual(mockPosts[idx].title);
+      });
+    });
   });
 });
 

@@ -8,9 +8,18 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   const start = req.query.skip ? parseInt(req.query.skip) : 0;
   const count = req.query.limit ? parseInt(req.query.limit) : 5;
+  const search = req.query.search;
+  let posts;
   try {
-    const posts = await Post.find().select('-createdAt -updatedAt -__v')
+    if (search) {
+      posts = await Post.find({ title: { $regex: new RegExp(search, 'i') } })
+                      .select('-createdAt -updatedAt -__v')
                       .skip(start).limit(count);
+    } else {
+      posts = await Post.find()
+                      .select('-createdAt -updatedAt -__v')
+                      .skip(start).limit(count);
+    }
     return res.status(200).send({posts});
   }  catch (err) {
     console.log(err);
