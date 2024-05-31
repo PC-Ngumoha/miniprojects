@@ -6,6 +6,7 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 app.use('/api/posts', PostRouter);
 
 const server = app.listen(PORT, () => {

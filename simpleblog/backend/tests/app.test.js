@@ -2,6 +2,9 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const { Post } = require('../models/post');
 const { app, server } = require('../src/app');
+const { uploadToCloudinary } = require('../utils/helpers');
+
+jest.mock('../utils/helpers');
 
 afterAll(async () => {
   // Disconnect from test DB
@@ -11,6 +14,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   // Clear DB after each test run
+  uploadToCloudinary.mockClear();
   await Post.deleteMany({});
 });
 
@@ -146,6 +150,34 @@ describe('POST /api/posts/', () => {
       expect(res.body).toEqual({});
     });
   });
+
+  describe('Response effect', () => {
+    it('should allow post creation with thumbnail', async () => {
+      const mockResult = {
+        secure_url: 'https://res.cloudinary.com/mock-url',
+      };
+      uploadToCloudinary.mockResolvedValue(mockResult);
+
+      const mockPost = {
+        title: 'New Post',
+        body: 'Post content goes here',
+      }
+
+      const res = await request(app).post('/api/posts/')
+                  .field('title', mockPost.title)
+                  .field('body', mockPost.body)
+                  .attach('thumbnail', Buffer.from('An image'), {
+                    filename: 'test.jpg',
+                    contentType: 'image/jpeg'
+                  });
+
+      expect(res.statusCode).toEqual(201);
+
+      const posts = await Post.find({ title: mockPost.title });
+      expect(posts[0]).toHaveProperty('thumbnail', mockResult.secure_url);
+      expect(uploadToCloudinary).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 
@@ -240,7 +272,7 @@ describe('PATCH /api/posts/post/:ID', () => {
     });
   });
 
-  describe('Response Effect', () => {
+  describe('Response effect', () => {
     it('should update content of actual post', async () => {
       const mockPost = {
         title: 'New Post',
@@ -283,7 +315,7 @@ describe('DELETE /api/posts/post/:ID', () => {
     expect(res.statusCode).toEqual(204);
   });
 
-  describe('Response Effect', () => {
+  describe('Response effect', () => {
     it('should remove specific post from DB', async () => {
       const mockPost = {
         title: 'New Post',

@@ -1,5 +1,7 @@
 const express = require('express');
-const {Post} = require('../models/post');
+const { Post } = require('../models/post');
+const { upload } = require('../config/multerConfig');
+const { uploadToCloudinary } = require('../utils/helpers');
 
 const router = express.Router();
 
@@ -16,10 +18,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', upload.single('thumbnail'), async (req, res) => {
   const newPost = new Post(req.body);
   let statusCode;
   try {
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file);
+      newPost.thumbnail = result.secure_url;
+    }
     await newPost.save();
     statusCode = 201;
   } catch (err) {
