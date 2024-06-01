@@ -5,6 +5,14 @@ const { uploadToCloudinary } = require('../utils/helpers');
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    post:
+ *      type: object
+ */
+
 router.get('/', async (req, res) => {
   const start = req.query.skip ? parseInt(req.query.skip) : 0;
   const count = req.query.limit ? parseInt(req.query.limit) : 5;

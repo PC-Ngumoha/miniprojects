@@ -4,7 +4,7 @@ const { Post } = require('../models/post');
 const { app, server } = require('../src/app');
 const { uploadToCloudinary } = require('../utils/helpers');
 
-jest.mock('../utils/helpers');
+jest.mock('../utils/helpers'); // Mocking the whole module.
 
 afterAll(async () => {
   // Disconnect from test DB

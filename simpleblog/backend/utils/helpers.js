@@ -6,14 +6,13 @@ const { Readable } = require('stream');
  */
 const cloudinary = require('cloudinary').v2;
 
-// Cloudinary config
 cloudinary.config({
-  cloud_name: 'dtclph7k1',
-  api_key: '743956918668563',
-  api_secret: '4jtIhOpMFdVO3TFZxlJOagPNZew',
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-async function uploadToCloudinary(file, onProgress) {
+async function uploadToCloudinary(file) {
   if (!file || !file.buffer) {
     throw new Error('No file buffer provided');
   }
@@ -30,13 +29,6 @@ async function uploadToCloudinary(file, onProgress) {
       }
       return resolve(result);
     });
-
-    // Enables progress tracking
-    if (onProgress) {
-      uploadStream.on('progress', (progress) => {
-        onProgress(progress);
-      })
-    }
 
     const readableStream = new Readable();
     readableStream.push(file.buffer);

@@ -4,13 +4,11 @@ let uri;
 
 switch (process.env.NODE_ENV) {
   case 'development':
-    uri = 'mongodb://127.0.0.1:27017/blogDB';
-    console.log('Currently using Dev DB');
+    uri = process.env.DEV_DB_PATH;
     break;
 
   case 'test':
-    uri = 'mongodb://127.0.0.1:27017/testDB';
-    console.log('Currently using Test DB');
+    uri = process.env.TEST_DB_PATH;
     break;
 }
 
