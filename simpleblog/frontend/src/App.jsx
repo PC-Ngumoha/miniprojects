@@ -1,11 +1,12 @@
-// import { useState } from 'react'
-// import './App.css';
+import { Outlet } from 'react-router-dom';
+import Navbar from '../components/Navbar/Navbar';
 
 function App() {
   return (
-    <div>
-      <img src="https://i.ibb.co/XsFQq36/baggy-brown.jpg" alt="baggy-brown" />
-    </div>
+    <>
+      <Navbar />
+      <Outlet />
+    </>
   );
 }
 
