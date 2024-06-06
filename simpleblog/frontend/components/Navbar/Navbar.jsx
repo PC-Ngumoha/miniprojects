@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
@@ -19,7 +21,9 @@ export default function Navbar() {
       <div className={ styles.linkSection }>
         {
           visible ? (
-            <Link to='/' className={styles.linkIcon}>Back</Link>
+            <Link to='/' className={styles.linkIcon}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </Link>
           ) : (
             <div className={ styles.spacer} />
           )

@@ -1,0 +1,75 @@
+
+.formArea {
+  display: block;
+  width: fit-content;
+  margin: 10px auto;
+}
+
+.formArea div {
+  margin: 20px 0;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.imageArea {
+  display: block;
+  font-size: 20px;
+  height: 10vw;
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+.formArea div > input {
+  display: block;
+  min-width: 60vw;
+  height: 40px;
+  border: 0;
+  outline: 0;
+  background-color: var(--background-color);
+  padding: 5px;
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.formArea div > textarea {
+  display: block;
+  min-width: 60vw;
+  min-height: 60vh;
+  border: 0;
+  outline: 0;
+  background-color: var(--background-color);
+  padding: 5px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.submitButton {
+  height: 50px;
+  width: 20%;
+  background-color: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--primary-color);
+  font-size: 18px;
+  font-family: 'Roboto', sans-serif;
+}
+
+@media screen and (max-width: 600px) {
+
+  .formArea div > input {
+    min-width: 80vw;
+    font-size: 16px;
+  }
+
+  .formArea div > textarea {
+    min-width: 80vw;
+    font-size: 11px;
+  }
+
+  .submitButton {
+    width: 35%;
+    font-size: 16px;
+  }
+}
