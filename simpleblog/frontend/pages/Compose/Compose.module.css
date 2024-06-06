@@ -14,12 +14,34 @@ input[type="file"] {
 }
 
 .imageArea {
-  display: block;
-  font-size: 20px;
-  height: 10vw;
-  text-align: center;
-  vertical-align: middle;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 45px;
+  min-height: 10vw;
+  color: var(--accent-color);
+  background-color: transparent;
+  border: 1px dashed var(--primary-color);
 }
+
+.imageArea img {
+  max-height: 200px;
+  max-width: 200px;
+  margin: 10px 0;
+}
+
+.imageArea span {
+  font-size: 14px;
+  width: fit-content;
+  color: var(--primary-color);
+}
+
+/* .previewClose {
+  color: var(--accent-color);
+  font-size: 18px;
+} */
 
 
 .formArea div > input {
@@ -34,6 +56,7 @@ input[type="file"] {
   font-family: 'Poppins', sans-serif;
 }
 
+
 .formArea div > textarea {
   display: block;
   min-width: 60vw;
@@ -44,6 +67,12 @@ input[type="file"] {
   padding: 5px;
   font-size: 16px;
   font-family: 'Poppins', sans-serif;
+}
+
+.formArea div > input::selection,
+.formArea div > textarea::selection {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
 }
 
 .submitButton {
