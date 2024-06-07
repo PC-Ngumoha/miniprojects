@@ -4,14 +4,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import styles from './Navbar.module.css';
 
+const ALLOWED_PATHNAMES = ['/compose', '/post'];
+
 export default function Navbar() {
   const location = useLocation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (location.pathname === '/compose') {
-      setVisible(true);
-    } else {
+    let pathMatchFound = false;
+    for (let i = 0; i < ALLOWED_PATHNAMES.length; i++) {
+      const pattern = new RegExp(ALLOWED_PATHNAMES[i]);
+      if (location.pathname.match(pattern)) {
+        setVisible(true);
+        pathMatchFound = true;
+        break;
+      }
+    }
+
+    if (!pathMatchFound) {
       setVisible(false);
     }
   }, [location]);
