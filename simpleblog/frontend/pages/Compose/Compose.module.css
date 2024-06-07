@@ -1,4 +1,3 @@
-
 .formArea {
   display: block;
   width: fit-content;
@@ -13,39 +12,6 @@ input[type="file"] {
   display: none;
 }
 
-.imageArea {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 45px;
-  width: 60vw;
-  min-height: 10vw;
-  color: var(--accent-color);
-  background-color: transparent;
-  border: 1px dashed var(--primary-color);
-}
-
-.imageArea img {
-  max-height: 350px;
-  max-width: 350px;
-  margin: 10px 0;
-}
-
-.imageArea span {
-  font-size: 14px;
-  font-family: 'Roboto', sans-serif;
-  width: fit-content;
-  color: var(--primary-color);
-}
-
-.previewClose {
-  color: var(--accent-color);
-  font-size: 30px;
-}
-
-
 .formArea div > input {
   display: block;
   min-width: 60vw;
@@ -53,9 +19,10 @@ input[type="file"] {
   border: 0;
   outline: 0;
   background-color: var(--background-color);
-  padding: 5px;
+  padding: 10px;
   font-size: 20px;
   font-family: 'Poppins', sans-serif;
+  font-weight: bold;
 }
 
 
@@ -66,7 +33,7 @@ input[type="file"] {
   border: 0;
   outline: 0;
   background-color: var(--background-color);
-  padding: 5px;
+  padding: 10px;
   font-size: 16px;
   font-family: 'Poppins', sans-serif;
 }
@@ -88,16 +55,6 @@ input[type="file"] {
 }
 
 @media screen and (max-width: 600px) {
-
-  .imageArea {
-    width: 80vw;
-  }
-
-  .imageArea img {
-    max-height: 200px;
-    max-width: 200px;
-  }
-
   .formArea div > input {
     min-width: 80vw;
     font-size: 16px;

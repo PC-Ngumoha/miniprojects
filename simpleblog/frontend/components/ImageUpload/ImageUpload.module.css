@@ -1,0 +1,42 @@
+.imageArea {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 45px;
+  width: 60vw;
+  min-height: 10vw;
+  color: var(--accent-color);
+  background-color: transparent;
+  border: 1px dashed var(--primary-color);
+}
+
+.imageArea img {
+  max-height: 350px;
+  max-width: 350px;
+  margin: 10px 0;
+}
+
+.imageArea span {
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  width: fit-content;
+  color: var(--primary-color);
+}
+
+.previewClose {
+  color: var(--accent-color);
+  font-size: 30px;
+}
+
+@media screen and (max-width: 600px) {
+  .imageArea {
+    width: 80vw;
+  }
+
+  .imageArea img {
+    max-height: 200px;
+    max-width: 200px;
+  }
+}
