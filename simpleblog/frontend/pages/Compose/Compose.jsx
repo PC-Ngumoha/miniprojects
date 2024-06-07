@@ -1,32 +1,47 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage } from '@fortawesome/free-regular-svg-icons';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faImage, faCircleXmark } from '@fortawesome/free-regular-svg-icons';
+// import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import styles from './Compose.module.css';
 
 export default function Compose() {
   const [image, setImage] = useState();
-  const [fileName, setFileName] = useState('No file selected yet');
+  const [fileName, setFileName] = useState('');
 
 
-  const handleImageUploadPreview = (evt) => {
+  const handleChangeImage = (evt) => {
+    evt.preventDefault();
     setImage(URL.createObjectURL(evt.target.files[0]));
     setFileName(evt.target.files[0].name);
   };
 
+  const handleDropImage = (evt) => {
+    evt.preventDefault();
+    const droppedFiles = evt.dataTransfer.files;
+
+    if (droppedFiles.length > 0) {
+      setImage(URL.createObjectURL(droppedFiles[0]));
+      setFileName(droppedFiles[0].name);
+    }
+  };
+
   return (
     <form className={ styles.formArea }>
-      <label htmlFor="blogImage" className={ styles.imageArea }>
+      <label htmlFor="blogImage"
+        className={ styles.imageArea }
+        onDrop={handleDropImage}
+        onDragOver={(evt) => evt.preventDefault()}>
         {
           image ? (
             <>
               <span>
                 <FontAwesomeIcon
-                  icon={ faXmark }
+                  icon={ faCircleXmark }
+                  className={ styles.previewClose }
                   onClick={(evt) => {
                     evt.preventDefault();
                     setImage(undefined);
-                    setFileName('No file selected yet');
+                    setFileName('');
                   }}
                 />
               </span>
@@ -34,12 +49,12 @@ export default function Compose() {
                 src={ image }
                 alt={ fileName }
               />
-              <span>File Name: { fileName }</span>
+              <span><b>File Name:</b> { fileName }</span>
             </>
           ) : (
             <>
               <FontAwesomeIcon icon={ faImage }/>
-              <span>Click To Upload Thumbnail (.png, .jpg files only)</span>
+              <span>Click / Drag to upload thumbnail (.png, .jpg files only)</span>
             </>
           )
         }
@@ -48,7 +63,7 @@ export default function Compose() {
           type="file"
           id="blogImage"
           accept="image/jpeg image/jpg image/png"
-          onChange={handleImageUploadPreview}
+          onChange={handleChangeImage}
         />
       </label>
       <div>
