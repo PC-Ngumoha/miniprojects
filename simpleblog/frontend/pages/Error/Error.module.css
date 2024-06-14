@@ -19,6 +19,16 @@
   font-size: 18px;
 }
 
+.returnButton {
+  font-size: 20px;
+  font-family: 'Roboto', sans-serif;
+  padding: 5px;
+  height: 80px;
+  width: 40%;
+  background-color: transparent;
+  border: .5px solid var(--primary-color);
+}
+
 
 @media screen and (max-width: 600px) {
   .errorContainer {
@@ -31,5 +41,11 @@
 
   .errorReason {
     font-size: 14px;
+  }
+
+  .returnButton {
+    font-size: 16px;
+    height: 60px;
+    width: 60%;
   }
 }
