@@ -1,0 +1,35 @@
+
+.errorContainer {
+  width: 60%;
+  height: 300px;
+  /* border: 1px solid black; */
+  margin:  20vh auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.errorTitle {
+  font-size: 100px;
+  font-family: 'Stylish', sans-serif;
+}
+
+.errorReason {
+  font-size: 18px;
+}
+
+
+@media screen and (max-width: 600px) {
+  .errorContainer {
+    width: 80%;
+  }
+
+  .errorTitle {
+    font-size: 60px;
+  }
+
+  .errorReason {
+    font-size: 14px;
+  }
+}
