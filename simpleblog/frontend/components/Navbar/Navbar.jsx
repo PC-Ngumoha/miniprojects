@@ -9,6 +9,7 @@ const ALLOWED_PATHNAMES = ['/compose', '/post'];
 export default function Navbar() {
   const location = useLocation();
   const [visible, setVisible] = useState(false);
+  const [prevPage, setPrevPage] = useState('/');
 
   useEffect(() => {
     let pathMatchFound = false;
@@ -24,6 +25,13 @@ export default function Navbar() {
     if (!pathMatchFound) {
       setVisible(false);
     }
+
+    // Determining the previous page visited.
+    if (location.state) {
+      if (location.state.prevPage) {
+        setPrevPage(location.state.prevPage);
+      }
+    }
   }, [location]);
 
   return (
@@ -31,7 +39,11 @@ export default function Navbar() {
       <div className={ styles.linkSection }>
         {
           visible ? (
-            <Link to='/' className={styles.linkIcon}>
+            <Link
+              to={ prevPage }
+              replace
+              state={{ prevPage: '/' }}
+              className={styles.linkIcon}>
               <FontAwesomeIcon icon={faChevronLeft} />
             </Link>
           ) : (

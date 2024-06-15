@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styles from './Post.module.css';
 
 export default function Post({id, title, thumbnail, body}) {
+
   return (
     <div className={ styles.card }>
       <img src={thumbnail} alt="baggy-brown" />
@@ -14,7 +15,9 @@ export default function Post({id, title, thumbnail, body}) {
           }
         </p>
         <div className={ styles.seeMore }>
-          <Link to={`/post/${id}`}>See More</Link>
+          <Link to={`/post/${id}`}>
+            See More
+          </Link>
         </div>
       </div>
     </div>

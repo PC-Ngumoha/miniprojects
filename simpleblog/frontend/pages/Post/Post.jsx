@@ -1,6 +1,6 @@
 import { useState } from "react";
 // import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../../components/Modal/Modal";
@@ -9,6 +9,7 @@ import styles from './Post.module.css';
 export default function Post() {
   // const { postId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {
@@ -26,7 +27,9 @@ export default function Post() {
         <h1>Blog Title</h1>
         <div className={ styles.postToolBar }>
           <span className={ styles.date }>Feb 27, 2024</span>
-          <span onClick={ () => { navigate('/compose') }}>
+          <span onClick={ () => {
+            navigate('/compose', {state: {prevPage: location.pathname}})
+          }}>
             <FontAwesomeIcon icon={faPencil} />
           </span>
           <span onClick={ handleOpen }>
