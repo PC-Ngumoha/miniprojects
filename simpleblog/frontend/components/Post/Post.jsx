@@ -11,7 +11,7 @@ export default function Post({id, title, thumbnail, body}) {
         <h1>{title}</h1>
         <p>
           {
-            body.length > 20 ? `${body.slice(20)} ...` : body
+            body.length > 50 ? `${body.slice(0, 50)} ...` : body
           }
         </p>
         <div className={ styles.seeMore }>

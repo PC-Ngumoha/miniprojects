@@ -5,8 +5,6 @@ import NextButton from "../../components/NextButton/NextButton";
 import { request } from '../../config/axios_config';
 
 export default function Home() {
-  const placeholder =
-  'https://placehold.jp/30/808080/ffffff/300x150.png?text=SimpleBlog';
   const [posts, setPosts] = useState([]);
   const [start, setStart] = useState(0);
 
@@ -37,7 +35,7 @@ export default function Home() {
             title={post.title}
             thumbnail={
               post.thumbnail ||
-              placeholder}
+              import.meta.env.VITE_THUMBNAIL_PLACEHOLDER}
             body={post.body}
           />
         ))

@@ -1,16 +1,18 @@
-import { useState } from "react";
-// import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../../components/Modal/Modal";
 import styles from './Post.module.css';
+import { request } from '../../config/axios_config';
 
 export default function Post() {
-  // const { postId } = useParams();
+  const { postId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [post, setPost] = useState({});
 
   const handleClose = () => {
     setOpen(false);
@@ -20,13 +22,38 @@ export default function Post() {
     setOpen(true);
   }
 
+  useEffect(() => {
+    (async function() {
+      try {
+        const value = await request.get(`/api/posts/post/${postId}`);
+        setPost(value.data.post);
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [postId]);
+
+  const formatDate = (timestamp) =>
+    new Date(timestamp).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+
   return (
     <>
       <section className={ styles.postBody }>
-        <img src="https://i.ibb.co/XsFQq36/baggy-brown.jpg" alt="Blog Image" />
-        <h1>Blog Title</h1>
+        <img
+          src={
+            post.thumbnail ||
+            import.meta.env.VITE_THUMBNAIL_PLACEHOLDER
+          }
+          alt="Blog Image" />
+        <h1>{ post.title }</h1>
         <div className={ styles.postToolBar }>
-          <span className={ styles.date }>Feb 27, 2024</span>
+          <span className={ styles.date }>
+            { formatDate(post.updatedAt) }
+          </span>
           <span onClick={ () => {
             navigate('/compose', {state: {prevPage: location.pathname}})
           }}>
@@ -37,50 +64,7 @@ export default function Post() {
           </span>
         </div>
         <p>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-          Est recusandae fugiat ratione praesentium perspiciatis reiciendis
-          labore nemo quo quos quaerat? Id dolorem aliquid sapiente vitae
-          eligendi est itaque quo nisi. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Earum ab exercitationem temporibus veritatis
-          officiis obcaecati quam consectetur iusto aliquam.
-          Totam dicta eos quasi dolorem tempora. Fuga nihil recusandae
-          sunt dolore.
-
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-          Est recusandae fugiat ratione praesentium perspiciatis reiciendis
-          labore nemo quo quos quaerat? Id dolorem aliquid sapiente vitae
-          eligendi est itaque quo nisi. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Earum ab exercitationem temporibus veritatis
-          officiis obcaecati quam consectetur iusto aliquam.
-          Totam dicta eos quasi dolorem tempora. Fuga nihil recusandae
-          sunt dolore.
-
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-          Est recusandae fugiat ratione praesentium perspiciatis reiciendis
-          labore nemo quo quos quaerat? Id dolorem aliquid sapiente vitae
-          eligendi est itaque quo nisi. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Earum ab exercitationem temporibus veritatis
-          officiis obcaecati quam consectetur iusto aliquam.
-          Totam dicta eos quasi dolorem tempora. Fuga nihil recusandae
-          sunt dolore.
-
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-          Est recusandae fugiat ratione praesentium perspiciatis reiciendis
-          labore nemo quo quos quaerat? Id dolorem aliquid sapiente vitae
-          eligendi est itaque quo nisi. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Earum ab exercitationem temporibus veritatis
-          officiis obcaecati quam consectetur iusto aliquam.
-          Totam dicta eos quasi dolorem tempora. Fuga nihil recusandae
-          sunt dolore.
-
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-          Est recusandae fugiat ratione praesentium perspiciatis reiciendis
-          labore nemo quo quos quaerat? Id dolorem aliquid sapiente vitae
-          eligendi est itaque quo nisi. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Earum ab exercitationem temporibus veritatis
-          officiis obcaecati quam consectetur iusto aliquam.
-          Totam dicta eos quasi dolorem tempora. Fuga nihil recusandae
-          sunt dolore.
+          { post.body }
         </p>
         <Modal open={open} onClose={handleClose}>
           <p>You sure you wanna delete this ?</p>
