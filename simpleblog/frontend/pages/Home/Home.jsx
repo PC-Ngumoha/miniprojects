@@ -14,7 +14,9 @@ export default function Home() {
         const value = await request.get('/api/posts/', {
           params: {start}
         });
-        setPosts(value.data.posts);
+        if (value.data.posts.length !== 0) {
+          setPosts(value.data.posts);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -41,12 +43,8 @@ export default function Home() {
         ))
       }
       <ComposeButton />
-      { start > 0 && (
-        <NextButton displayText='Prev'handleClick={prevPage}/>
-      )}
-      { posts.length === 5 && (
-        <NextButton displayText='Next' handleClick={nextPage}/>
-      )}
+      <NextButton displayText='Prev'handleClick={prevPage}/>
+      <NextButton displayText='Next' handleClick={nextPage}/>
    </>
   );
 }

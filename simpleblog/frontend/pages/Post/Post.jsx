@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useToast } from '@chakra-ui/react';
 import Modal from "../../components/Modal/Modal";
 import styles from './Post.module.css';
 import { request } from '../../config/axios_config';
@@ -13,6 +13,7 @@ export default function Post() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [post, setPost] = useState({});
+  const toast = useToast();
 
   const handleClose = () => {
     setOpen(false);
@@ -69,8 +70,36 @@ export default function Post() {
         <Modal open={open} onClose={handleClose}>
           <p>You sure you wanna delete this ?</p>
           <div className={ styles.options }>
-            <button className={ styles.yes }>Yes</button>
-            <button className={ styles.no }>No</button>
+            <button className={ styles.yes } onClick={() => {
+              (async function() {
+                try {
+                  await request.delete(`/api/posts/post/${postId}`);
+                  navigate('/', {replace: true});
+                  toast({
+                    title: 'Successful !',
+                    description: 'Post successfully deleted',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                    position: 'top',
+                  });
+                } catch(err) {
+                  toast({
+                    title: 'Error !',
+                    description: 'Post not deleted successfully',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                    position: 'top',
+                  });
+                }
+              })();
+            }}>
+              Yes
+            </button>
+            <button className={ styles.no } onClick={handleClose}>
+              No
+            </button>
           </div>
         </Modal>
       </section>
