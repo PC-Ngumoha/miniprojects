@@ -26,7 +26,6 @@ export default function Home() {
   const nextPage = () => {setStart(start + 5)};
   const prevPage = () => {setStart(start - 5)};
 
-
   return (
    <>
       {

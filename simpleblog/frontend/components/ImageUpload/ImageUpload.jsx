@@ -59,6 +59,7 @@ export default function ImageUpload({
       <input
         type="file"
         id="blogImage"
+        name='thumbnail'
         accept="image/jpeg image/jpg image/png"
         onChange={handleChangeImage}
       />
