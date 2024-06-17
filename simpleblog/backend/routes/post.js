@@ -1,32 +1,17 @@
 const express = require('express');
+const cors = require('cors');
 const { Post } = require('../models/post');
 const { upload } = require('../config/multerConfig');
 const { uploadToCloudinary } = require('../utils/helpers');
 
 const router = express.Router();
 
-/**
- * @swagger
- *
- * components:
- *  schemas:
- *    Post:
- *      type: object
- *      required:
- *        - title
- *        - body
- *      properties:
- *        title:
- *          type: string
- *          description: The title of the blog post
- *        body:
- *          type: string
- *          description: The content of the blog post
- *        thumbnail:
- *          type: string
- *          description: The URL of the blog's thumbnail image
- */
+const corsOptions = {
+  origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
+  optionsSuccessStatus: 200
+};
 
+router.use(cors());
 
 /**
  * @swagger
@@ -37,7 +22,7 @@ const router = express.Router();
  *    tags: [Post]
  *    parameters:
  *      - in: query
- *        name: page
+ *        name: start
  *        schema:
  *          type: integer
  *          default: 0
@@ -59,7 +44,7 @@ const router = express.Router();
  */
 
 router.get('/', async (req, res) => {
-  const page = req.query.page ? parseInt(req.query.page) : 0;
+  const start = req.query.start ? parseInt(req.query.start) : 0;
   const count = req.query.limit ? parseInt(req.query.limit) : 5;
   const search = req.query.search;
   let posts;
@@ -67,11 +52,11 @@ router.get('/', async (req, res) => {
     if (search) {
       posts = await Post.find({ title: { $regex: new RegExp(search, 'i') } })
                       .select('-createdAt -updatedAt -__v')
-                      .skip(page).limit(count);
+                      .skip(start).limit(count);
     } else {
       posts = await Post.find()
                       .select('-createdAt -updatedAt -__v')
-                      .skip(page).limit(count);
+                      .skip(start).limit(count);
     }
     return res.status(200).send({posts});
   }  catch (err) {

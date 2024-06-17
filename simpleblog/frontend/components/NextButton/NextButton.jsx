@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import styles from './NextButton.module.css';
 
-export default function NextButton({ displayText }) {
+export default function NextButton({ displayText, handleClick }) {
   return (
-    <button className={ styles.nextButton }>
+    <button
+      className={ styles.nextButton }
+      onClick={handleClick}>
       { displayText }
     </button>
   );
@@ -11,4 +13,5 @@ export default function NextButton({ displayText }) {
 
 NextButton.propTypes = {
   displayText: PropTypes.string.isRequired,
+  handleClick: PropTypes.func.isRequired,
 }
