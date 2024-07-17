@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 app.use(userRouter);
-app.use(SecretRouter);
+app.use('/api/secrets', SecretRouter);
 
 const PORT = process.env.PORT || 3000;
 
