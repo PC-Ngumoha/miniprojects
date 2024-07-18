@@ -1,5 +1,5 @@
 import { createHmac } from 'node:crypto';
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -36,9 +36,9 @@ const UserSchema = new Schema({
       token: {
         type: String,
         required: true,
-      }
-    }
-  ]
+      },
+    },
+  ],
 });
 
 UserSchema.pre('save', function (next) {
@@ -76,20 +76,28 @@ UserSchema.statics.findByCredentials = async function (email, password) {
   return user;
 };
 
-UserSchema.statics.findByRefreshToken = async function (token) {
-  const { id } = jwt.verify(
-    token,
-    'thisisnotthesecretkeyshouldbereplacedinproduction'
-  );
+UserSchema.statics.canRefresh = async function (token) {
+  if (!token) throw new Error('Unauthorized!!!');
+  const secret = 'thisisnotthesecretkeyshouldbereplacedinproduction';
+
+  const { id } = jwt.verify(token, secret);
 
   const user = await User.findById(id);
 
   if (!user) throw new Error('User not found');
 
-  return user;
-}
+  const tokenHash = createHmac('sha256', secret).update(token).digest('hex');
 
-UserSchema.methods.generateAccessToken = async function() {
+  const match = user.tokens.find((elem) => elem.token === tokenHash);
+  if (!match) throw new Error('Invalid token');
+
+  user.tokens = user.tokens.filter((elem) => elem.token !== tokenHash);
+  await user.save();
+
+  return user;
+};
+
+UserSchema.methods.generateAccessToken = async function () {
   const user = this;
 
   const token = jwt.sign(
@@ -106,7 +114,7 @@ UserSchema.methods.generateAccessToken = async function() {
   return token;
 };
 
-UserSchema.methods.generateRefreshToken = async function() {
+UserSchema.methods.generateRefreshToken = async function () {
   const user = this;
   const secret = 'thisisnotthesecretkeyshouldbereplacedinproduction';
 
@@ -125,7 +133,7 @@ UserSchema.methods.generateRefreshToken = async function() {
 
   await user.save();
   return token;
-}
+};
 
 const User = model('User', UserSchema);
 export default User;

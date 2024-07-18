@@ -1,7 +1,6 @@
-import { Router } from "express";
+import { Router } from 'express';
 import UserController from '../controllers/user.controller';
-import handleAuthSession from "../middleware/auth.middleware";
-
+import handleAuthSession from '../middleware/auth.middleware';
 
 const router = new Router();
 
