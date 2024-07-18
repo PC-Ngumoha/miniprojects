@@ -9,7 +9,10 @@ const SecretSchema = new Schema({
     type: Date,
     default: () => Date.now(),
   },
-  updatedAt: Date,
+  updatedAt: {
+    type: Date,
+    default: () => Date.now(),
+  },
   author: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
@@ -17,11 +20,6 @@ SecretSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
-
-// SecretSchema.statics.updateAuthorSecret = async function (id, authorId, data) {
-//   const secret = await this.findOne({ _id: id, author: authorId });
-
-// };
 
 const Secret = model('Secret', SecretSchema);
 export default Secret;

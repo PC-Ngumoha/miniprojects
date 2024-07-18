@@ -5,25 +5,23 @@ import User from '../models/user.model';
 export default class UserController {
   static async register (req, res) {
     try {
-      const { password } = req.body;
-      const hash = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-      await User.create({ ...req.body, password: hash });
+      await User.create(req.body);
       res.status(201).json({ message: 'Registered user successfully' });
     } catch (err) {
-      res.status(500).json({ message: err.message} );
+      if (err.message === 'User not found') {
+        res.status(404).json({message: err.message});
+      } else if (err.message === 'Incorrect password') {
+        res.status(400).json({message: err.message});
+      } else {
+        res.status(500).json({ message: err.message} );
+      }
     }
   }
 
   static async login (req, res) {
     try {
-      const { username, password } = req.body;
-      const user = await User.findOne({ username });
-      if (!user) {
-        return res.status(404).json({message: 'User not found'});
-      }
-      if (!bcrypt.compareSync(password, user.password)) {
-        return res.status(400).json({message: 'Password incorrect'});
-      }
+      const { email, password } = req.body;
+      const user = await User.findByCredentials(email, password);
       const token = jwt.sign({ id: user._id, email: user.email},
         'thisisnotthesecretkeyshouldbereplacedinproduction', {
         expiresIn: '1h'
@@ -36,8 +34,7 @@ export default class UserController {
 
   static async retrieveUser (req, res) {
     try {
-      const { userId } = req;
-      const user = await User.findById(userId);
+      const user = await User.findById(req.userId);
       if (!user) return res.status(404).json({message: 'User not found'});
       res.status(200).json(user);
     } catch (err) {
@@ -47,14 +44,8 @@ export default class UserController {
 
   static async updateUser (req, res) {
     try {
-      const { userId } = req;
-      let { password } = req.body;
-      if (password) {
-        password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-      }
-      const done = await User.findByIdAndUpdate(userId,
-        { ...req.body, password });
-      if (!done) return res.status(404).json({message: 'User not found'});
+      const found = await User.findOneAndUpdate({ _id: req.userId }, req.body);
+      if (!found) return res.status(404).json({message: 'User not found'});
       res.status(200).json({message: 'User updated successfully!!!'});
     } catch (err) {
       res.status(500).json({message: err.message});
@@ -63,10 +54,8 @@ export default class UserController {
 
   static async deleteUser (req, res) {
     try {
-      const { userId } = req;
-
-      const done = await User.findByIdAndDelete(userId);
-      if (!done) return res.status(404).json({message: 'User not found'});
+      const found = await User.findOneAndDelete({ _id: req.userId });
+      if (!found) return res.status(404).json({message: 'User not found'});
       res.status(204).json();
     } catch (err) {
       res.status(500).json({message: err.message});
