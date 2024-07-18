@@ -9,6 +9,8 @@ router.post('/register', UserController.register);
 
 router.post('/login', UserController.login);
 
+router.post('/refresh', UserController.refresh);
+
 router.get('/me', handleAuthSession, UserController.retrieveUser);
 
 router.put('/me', handleAuthSession, UserController.updateUser);

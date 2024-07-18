@@ -1,5 +1,4 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import { createHmac } from 'node:crypto';
 import User from '../models/user.model';
 
 export default class UserController {
@@ -22,13 +21,32 @@ export default class UserController {
     try {
       const { email, password } = req.body;
       const user = await User.findByCredentials(email, password);
-      const token = jwt.sign({ id: user._id, email: user.email},
-        'thisisnotthesecretkeyshouldbereplacedinproduction', {
-        expiresIn: '1h'
-      });
-      res.status(200).json({token});
+      const accessToken = await user.generateAccessToken();
+      const refreshToken = await user.generateRefreshToken();
+      res.status(200).json({accessToken, refreshToken});
     } catch (err) {
       res.status(500).json({ message: err.message });
+    }
+  }
+
+  static async refresh (req, res) {
+    try {
+      const { token } = req.body;
+      const user = await User.findByRefreshToken(token);
+      const secret = 'thisisnotthesecretkeyshouldbereplacedinproduction';
+      const tokenHash = createHmac('sha256', secret)
+                        .update(token).digest('hex');
+      const match = user.tokens.find((elem) => elem.token === tokenHash);
+      if (!match) return res.status(401).json({message: 'Unauthorized!!!'});
+      const accessToken = await user.generateAccessToken();
+      const refreshToken = await user.generateRefreshToken();
+      res.status(200).json({accessToken, refreshToken});
+    } catch (err) {
+      if (err.message === 'User not found') {
+        res.status(404).json({message: err.message});
+      } else {
+        res.status(500).json({ message: err.message });
+      }
     }
   }
 

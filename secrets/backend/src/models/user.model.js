@@ -1,5 +1,7 @@
+import { createHmac } from 'node:crypto';
 import { Schema, model } from "mongoose";
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const UserSchema = new Schema({
   firstName: {
@@ -29,6 +31,14 @@ const UserSchema = new Schema({
     type: Date,
     default: () => Date.now(),
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      }
+    }
+  ]
 });
 
 UserSchema.pre('save', function (next) {
@@ -52,7 +62,7 @@ UserSchema.pre('findOneAndUpdate', function (next) {
   next();
 });
 
-UserSchema.statics.findByCredentials = async function(email, password) {
+UserSchema.statics.findByCredentials = async function (email, password) {
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -64,6 +74,57 @@ UserSchema.statics.findByCredentials = async function(email, password) {
   }
 
   return user;
+};
+
+UserSchema.statics.findByRefreshToken = async function (token) {
+  const { id } = jwt.verify(
+    token,
+    'thisisnotthesecretkeyshouldbereplacedinproduction'
+  );
+
+  const user = await User.findById(id);
+
+  if (!user) throw new Error('User not found');
+
+  return user;
+}
+
+UserSchema.methods.generateAccessToken = async function() {
+  const user = this;
+
+  const token = jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+    },
+    'thisisnotthesecretkeyshouldbereplacedinproduction',
+    {
+      expiresIn: '10m',
+    }
+  );
+
+  return token;
+};
+
+UserSchema.methods.generateRefreshToken = async function() {
+  const user = this;
+  const secret = 'thisisnotthesecretkeyshouldbereplacedinproduction';
+
+  const token = jwt.sign(
+    {
+      id: user._id,
+    },
+    secret,
+    {
+      expiresIn: '1d',
+    }
+  );
+
+  const rTknHash = createHmac('sha256', secret).update(token).digest('hex');
+  user.tokens.push({ token: rTknHash });
+
+  await user.save();
+  return token;
 }
 
 const User = model('User', UserSchema);
