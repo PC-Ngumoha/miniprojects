@@ -1,9 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 const SecretSchema = new Schema({
   content: {
     type: String,
-    required: true
+    required: true,
   },
   createdAt: {
     type: Date,
@@ -16,7 +16,7 @@ const SecretSchema = new Schema({
   author: { type: Schema.Types.ObjectId, ref: 'User' },
 });
 
-SecretSchema.pre('save', function(next) {
+SecretSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });

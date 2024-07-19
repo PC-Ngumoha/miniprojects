@@ -3,6 +3,16 @@ import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+const ACCESS_TOKEN = {
+  secret: process.env.ACCESS_TOKEN_SECRET,
+  expiry: process.env.ACCESS_TOKEN_LIFESPAN,
+};
+
+const REFRESH_TOKEN = {
+  secret: process.env.REFRESH_TOKEN_SECRET,
+  expiry: process.env.REFRESH_TOKEN_LIFESPAN,
+};
+
 const UserSchema = new Schema({
   firstName: {
     type: String,
@@ -41,6 +51,15 @@ const UserSchema = new Schema({
   ],
 });
 
+UserSchema.set('toJSON', {
+  virtuals: true,
+  transform: function (doc, ret, options) {
+    delete ret.password;
+    delete ret.tokens;
+    return ret;
+  },
+});
+
 UserSchema.pre('save', function (next) {
   if (this.isModified('password')) {
     this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(10));
@@ -76,22 +95,23 @@ UserSchema.statics.findByCredentials = async function (email, password) {
   return user;
 };
 
-UserSchema.statics.canRefresh = async function (token) {
+UserSchema.statics.hydrateFromRefreshToken = async function (token) {
   if (!token) throw new Error('Unauthorized!!!');
-  const secret = 'thisisnotthesecretkeyshouldbereplacedinproduction';
 
-  const { id } = jwt.verify(token, secret);
+  const { id } = jwt.verify(token, REFRESH_TOKEN.secret);
 
   const user = await User.findById(id);
 
   if (!user) throw new Error('User not found');
 
-  const tokenHash = createHmac('sha256', secret).update(token).digest('hex');
+  const tknHash = createHmac('sha256', REFRESH_TOKEN.secret)
+    .update(token)
+    .digest('hex');
 
-  const match = user.tokens.find((elem) => elem.token === tokenHash);
+  const match = user.tokens.find((elem) => elem.token === tknHash);
   if (!match) throw new Error('Invalid token');
 
-  user.tokens = user.tokens.filter((elem) => elem.token !== tokenHash);
+  user.tokens = user.tokens.filter((elem) => elem.token !== tknHash);
   await user.save();
 
   return user;
@@ -105,9 +125,9 @@ UserSchema.methods.generateAccessToken = async function () {
       id: user._id,
       email: user.email,
     },
-    'thisisnotthesecretkeyshouldbereplacedinproduction',
+    ACCESS_TOKEN.secret,
     {
-      expiresIn: '10m',
+      expiresIn: ACCESS_TOKEN.expiry,
     }
   );
 
@@ -116,19 +136,20 @@ UserSchema.methods.generateAccessToken = async function () {
 
 UserSchema.methods.generateRefreshToken = async function () {
   const user = this;
-  const secret = 'thisisnotthesecretkeyshouldbereplacedinproduction';
 
   const token = jwt.sign(
     {
       id: user._id,
     },
-    secret,
+    REFRESH_TOKEN.secret,
     {
-      expiresIn: '1d',
+      expiresIn: REFRESH_TOKEN.expiry,
     }
   );
 
-  const rTknHash = createHmac('sha256', secret).update(token).digest('hex');
+  const rTknHash = createHmac('sha256', REFRESH_TOKEN.secret)
+    .update(token)
+    .digest('hex');
   user.tokens.push({ token: rTknHash });
 
   await user.save();

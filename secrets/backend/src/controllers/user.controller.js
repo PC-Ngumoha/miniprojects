@@ -1,4 +1,3 @@
-import { createHmac } from 'node:crypto';
 import User from '../models/user.model';
 
 export default class UserController {
@@ -32,7 +31,7 @@ export default class UserController {
   static async refresh(req, res) {
     try {
       const { token } = req.body;
-      const user = await User.canRefresh(token);
+      const user = await User.hydrateFromRefreshToken(token);
       const accessToken = await user.generateAccessToken();
       const refreshToken = await user.generateRefreshToken();
       res.status(200).json({ accessToken, refreshToken });

@@ -1,8 +1,6 @@
 import { Router } from 'express';
-import User from "../models/user.model";
-import Secret from "../models/secret.model";
 import SecretController from '../controllers/secret.controller';
-import handleAuthSession from "../middleware/auth.middleware";
+import handleAuthSession from '../middleware/auth.middleware';
 
 const router = new Router();
 
